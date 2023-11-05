@@ -5,10 +5,10 @@ use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType};
 use plotly::{ImageFormat, Layout, Plot, Scatter};
 
 fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
-    let bgcol = Rgb::new(40, 40, 40);
-    let linecol1 = Rgb::new(0, 146, 204);
-    let linecol2 = Rgb::new(255, 51, 51);
-    let forecol = Rgb::new(240, 240, 240);
+    let bgcol = Rgb::new(255, 255, 255);
+    let linecol1 = NamedColor::DarkBlue;
+    let linecol2 = NamedColor::DarkRed;
+    let forecol = Rgb::new(0, 0, 0);
     let gridcol = Rgb::new(120, 120, 120);
     let transp = NamedColor::Transparent;
     let thick: usize = 4;
