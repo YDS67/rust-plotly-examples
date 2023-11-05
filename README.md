@@ -6,8 +6,8 @@ Here's an example plot:
 
 ### Dark mode (example 2)
 
-![image](./example2/line_and_scatter_plot.svg)
+![image](./example2/line_and_scatter_plot.png)
 
 ### Crazy colors (example 1)
 
-![image](./example1/line_and_scatter_plot.svg)
+![image](./example1/line_and_scatter_plot.png)
