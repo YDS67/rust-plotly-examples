@@ -21,12 +21,12 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
     let fsz_axes: usize = 35;
 
     let trace1 = Scatter::new(x.clone(), y1)
-        .name("sin(x)")
+        .name("sin(x)  ")
         .mode(Mode::LinesMarkers)
         .line(Line::new().color(linecol1).width(medium as f64))
         .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle));
     let trace2 = Scatter::new(x, y2)
-        .name("cos(x)")
+        .name("cos(x)  ")
         .mode(Mode::LinesMarkers)
         .line(Line::new().color(linecol2).width(medium as f64))
         .marker(Marker::new().size(msize).symbol(MarkerSymbol::DiamondDot));
@@ -39,10 +39,11 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
         .x_anchor(Anchor::Left)
         .y(0.0133)
         .y_anchor(Anchor::Bottom)
-        .font(Font::new().size(fsz_legend).color(forecol))
+        .font(Font::new().size(fsz_legend).color(forecol).family("Serif"))
         .border_width(medium)
         .border_color(forecol)
-        .background_color(bgcol);
+        .background_color(bgcol)
+        .item_width(52);
 
     let axis = Axis::new()
         .position(0.0)
@@ -58,9 +59,9 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
         .grid_color(gridcol);
 
     let axisx = axis.clone().title(Title::new("x, a.u.")
-        .font(Font::new().size(fsz_axes).color(forecol)));
+        .font(Font::new().size(fsz_axes).color(forecol).family("Serif")));
     let axisy = axis.clone().title(Title::new("f(x)")
-        .font(Font::new().size(fsz_axes).color(forecol)));
+        .font(Font::new().size(fsz_axes).color(forecol).family("Serif")));
 
     let line_top = Shape::new()
         .shape_type(ShapeType::Line)
