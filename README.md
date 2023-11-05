@@ -8,6 +8,3 @@ Here's an example plot:
 
 ![image](./example2/line_and_scatter_plot.png)
 
-### Crazy colors (example 1)
-
-![image](./example1/line_and_scatter_plot.png)
