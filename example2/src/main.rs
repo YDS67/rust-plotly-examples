@@ -17,6 +17,8 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
     let msize: usize = 10;
     let fsz_title: usize = 35;
     let fsz_legend: usize = 35;
+    let fsz_ticks: usize = 24;
+    let fsz_axes: usize = 35;
 
     let trace1 = Scatter::new(x.clone(), y1)
         .name("sin(x)")
@@ -55,6 +57,11 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
         .show_grid(true)
         .grid_color(gridcol);
 
+    let axisx = axis.clone().title(Title::new("x, a.u.")
+        .font(Font::new().size(fsz_axes).color(forecol)));
+    let axisy = axis.clone().title(Title::new("f(x)")
+        .font(Font::new().size(fsz_axes).color(forecol)));
+
     let line_top = Shape::new()
         .shape_type(ShapeType::Line)
         .x_ref("paper")
@@ -82,11 +89,11 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
     let mut layout = Layout::new()
         .width(1024)
         .height(768)
-        .font(Font::new().size(24))
+        .font(Font::new().size(fsz_ticks))
         .title(title)
         .legend(legend)
-        .x_axis(axis.clone())
-        .y_axis(axis)
+        .x_axis(axisx)
+        .y_axis(axisy)
         .plot_background_color(transp)
         .paper_background_color(bgcol);
 
@@ -98,7 +105,7 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
     plot.add_trace(trace2);
     plot.set_layout(layout);
 
-    //plot.write_html("./line_and_scatter_plot.html");
+    plot.write_html("./line_and_scatter_plot.html");
     plot.write_image("./line_and_scatter_plot", ImageFormat::SVG, 1024, 768, 1.0);
     plot.write_image("./line_and_scatter_plot", ImageFormat::PNG, 1024, 768, 1.0);
 }
