@@ -21,12 +21,12 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
     let trace1 = Scatter::new(x.clone(), y1)
         .name("sin(x)")
         .mode(Mode::LinesMarkers)
-        .line(Line::new().color(linecol1).width(thick as f64))
-        .marker(Marker::new().size(msize).symbol(MarkerSymbol::CircleDot));
+        .line(Line::new().color(linecol1).width(medium as f64))
+        .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle));
     let trace2 = Scatter::new(x, y2)
         .name("cos(x)")
         .mode(Mode::LinesMarkers)
-        .line(Line::new().color(linecol2).width(thick as f64))
+        .line(Line::new().color(linecol2).width(medium as f64))
         .marker(Marker::new().size(msize).symbol(MarkerSymbol::DiamondDot));
 
     let title = Title::new("Trigonometric functions")
