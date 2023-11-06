@@ -4,9 +4,10 @@ use plotly::common::{Anchor, Font, Line, Marker, MarkerSymbol, Mode, Title};
 use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType, Margin};
 use plotly::{ImageFormat, Layout, Plot, Scatter};
 
-fn line_and_scatter_plot(x: Vec<f64>, y: Vec<f64>, flnm: &str, ylab: &str, legend: &str, col: NamedColor) {
+fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>, flnm: &str, title: &str) {
     let bgcol = Rgb::new(255, 255, 255);
-    let linecol1 = col;
+    let linecol1 = NamedColor::DarkBlue;
+    let linecol2 = NamedColor::DarkRed;
     let forecol = Rgb::new(0, 0, 0);
     let gridcol = Rgb::new(120, 120, 120);
     let transp = NamedColor::Transparent;
@@ -15,22 +16,30 @@ fn line_and_scatter_plot(x: Vec<f64>, y: Vec<f64>, flnm: &str, ylab: &str, legen
     let _thin: usize = 2;
     let msize: usize = 10;
     let fsz_title: usize = 35;
-    let fsz_legend: usize = 35;
-    let fsz_ticks: usize = 30;
-    let fsz_axes: usize = 35;
+    let fsz_legend: usize = 25;
+    let fsz_ticks: usize = 25;
+    let fsz_axes: usize = 30;
 
-    let trace1 = Scatter::new(x.clone(), y)
-        .name(legend)
-        .mode(Mode::LinesMarkers)
-        .line(Line::new().color(linecol1).width(medium as f64))
-        .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle));
+    let trace1 = Scatter::new(x1, y1)
+        .name("Diff.  ")
+        .mode(Mode::Lines)
+        .line(Line::new().color(linecol1).width(medium as f64)
+        //.marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle),
+    );
+        
+    let trace2 = Scatter::new(x2, y2)
+        .name("R.W.  ")
+        .mode(Mode::Markers)
+        //.line(Line::new().color(linecol2).width(medium as f64))
+        .marker(Marker::new().size(msize).color(linecol2).symbol(MarkerSymbol::Circle)
+    );
 
-    let title = Title::new("Electrons vs Quantum dots")
+    let title = Title::new(title)
         .font(Font::new().size(fsz_title).family("Serif").color(forecol));
 
     let legend = Legend::new()
-        .x(0.01)
-        .x_anchor(Anchor::Left)
+        .x(0.99)
+        .x_anchor(Anchor::Right)
         .y(1.0 - 0.0133)
         .y_anchor(Anchor::Top)
         .font(Font::new().size(fsz_legend).color(forecol).family("Serif"))
@@ -53,12 +62,12 @@ fn line_and_scatter_plot(x: Vec<f64>, y: Vec<f64>, flnm: &str, ylab: &str, legen
         .grid_color(gridcol);
 
     let axisx = axis.clone().title(
-        Title::new("Electric field, kV/cm")
+        Title::new("x. a.u.")
             .font(Font::new().size(fsz_axes).color(forecol).family("Serif")));
 
     let axisy = axis
         .clone()
-        .title(Title::new(ylab)
+        .title(Title::new("Number of particles")
             .font(Font::new().size(fsz_axes).color(forecol).family("Serif")));
 
     let line_top = Shape::new()
@@ -87,53 +96,48 @@ fn line_and_scatter_plot(x: Vec<f64>, y: Vec<f64>, flnm: &str, ylab: &str, legen
         .font(Font::new().size(fsz_ticks))
         .title(title)
         .legend(legend)
+        .show_legend(true)
         .x_axis(axisx)
         .y_axis(axisy)
         .plot_background_color(transp)
         .paper_background_color(bgcol)
-        .margin(Margin::new().left(100).bottom(100));
+        .margin(Margin::new().left(125).bottom(75));
 
     layout.add_shape(line_top);
     layout.add_shape(line_right);
 
     let mut plot = Plot::new();
     plot.add_trace(trace1);
+    plot.add_trace(trace2);
     plot.set_layout(layout);
 
     //plot.write_html(flnm);
-    //plot.write_image(flnm, ImageFormat::SVG, 1024, 768, 1.0);
+    plot.write_image(flnm, ImageFormat::SVG, 1024, 768, 1.0);
     plot.write_image(flnm, ImageFormat::PNG, 1024, 768, 1.0);
 }
 
-fn main() {
- 
-    let data = read_from_file("IV_curve.dat");
-    let mut x = data[1];
-    let mut y1 = data[2];
-    let mut y2 = data[3];
+fn read_from_file(file_path: &str) -> Vec<Vec<f64>> {
+    use std::io::BufReader;
+    use std::io::BufRead;
+    use std::fs::File;
 
-    line_and_scatter_plot(x.clone(), y1, "Velocity vs field", "Velocity, nm/fs", " <v>  ", NamedColor::DarkBlue);
-    line_and_scatter_plot(x, y2, "Energy vs field", "Energy, eV", " <E>  ", NamedColor::DarkRed);
-}
-
-fn read_from_file(file_path: &str) -> std::vec::Vec<Vec<f64>> {
-    let file = std::fs::File::open(file_path).expect("Error opening file");
-    let reader = std::io::BufReader::new(file);
-    let mut file_contents: std::vec::Vec<String> = std::vec::Vec::new();
+    let file = File::open(file_path).expect("Error opening file");
+    let reader = BufReader::new(file);
+    let mut file_contents: Vec<String> = Vec::new();
 
     for line in reader.lines() {
         file_contents.push(line.unwrap());
     }
 
-    let mut data_rows: std::vec::Vec<Vec<f64>> = std::vec::Vec::new();
-    let mut data_columns: std::vec::Vec<Vec<f64>> = std::vec::Vec::new();
+    let mut data_rows: Vec<Vec<f64>> = Vec::new();
+    let mut data_columns: Vec<Vec<f64>> = Vec::new();
 
-    let mut n_columns: std::vec::Vec<usize> = std::vec::Vec::new();
-    let mut n_rows: usize;
+    let mut n_columns: Vec<usize> = Vec::new();
+    let mut n_rows: usize = 0;
 
     for line in file_contents {
-        let row: std::vec::Vec<f64> = line
-        .split(' ')
+        let row: Vec<f64> = line
+        .split(|c| c == ' ' || c == '\t')
         .map(|s| s.trim()) 
         .filter(|s| !s.is_empty()) 
         .map(|s| s.parse().unwrap()) 
@@ -145,10 +149,10 @@ fn read_from_file(file_path: &str) -> std::vec::Vec<Vec<f64>> {
         data_rows.push(row)
     };
 
-    let n1 = n_columns[1].expect("Empty first row, abort");
+    let n1 = n_columns[1];
 
-    for i in 0..n1 {
-        let column: std::vec::Vec<f64> = std::vec::Vec::new();
+    for _i in 0..n1 {
+        let column: Vec<f64> = Vec::new();
         data_columns.push(column)
     }
 
@@ -160,4 +164,15 @@ fn read_from_file(file_path: &str) -> std::vec::Vec<Vec<f64>> {
 
     data_columns
 
+}
+
+fn main() {
+ 
+    let data = read_from_file("data_file.dat");
+    let x1 = data[0].clone();
+    let y1 = data[1].clone();
+    let x2 = data[3].clone();
+    let y2 = data[4].clone();
+
+    line_and_scatter_plot(x1, y1, x2, y2, "Data_plot", "Diffusion / random walk");
 }
