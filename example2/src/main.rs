@@ -1,7 +1,7 @@
 extern crate plotly;
 use plotly::color::{NamedColor, Rgb};
 use plotly::common::{Anchor, Font, Line, Marker, MarkerSymbol, Mode, Title};
-use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType};
+use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType, Margin};
 use plotly::{ImageFormat, Layout, Plot, Scatter};
 
 fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
@@ -96,7 +96,8 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
         .x_axis(axisx)
         .y_axis(axisy)
         .plot_background_color(transp)
-        .paper_background_color(bgcol);
+        .paper_background_color(bgcol)
+        .margin(Margin::new().left(100).bottom(100));
 
     layout.add_shape(line_top);
     layout.add_shape(line_right);
