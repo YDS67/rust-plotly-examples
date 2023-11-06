@@ -11,7 +11,7 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
     let forecol = Rgb::new(240, 240, 240);
     let gridcol = Rgb::new(120, 120, 120);
     let transp = NamedColor::Transparent;
-    let thick: usize = 4;
+    let thick: usize = 3;
     let medium: usize = 3;
     let _thin: usize = 2;
     let msize: usize = 10;

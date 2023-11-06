@@ -1,6 +1,6 @@
 extern crate plotly;
 use plotly::color::{NamedColor, Rgb};
-use plotly::common::{Anchor, Font, Line, Marker, MarkerSymbol, Mode, Title};
+use plotly::common::{Anchor, Font, Line, Mode, Title, DashType};
 use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType};
 use plotly::{ImageFormat, Layout, Plot, Scatter};
 
@@ -11,10 +11,10 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
     let forecol = Rgb::new(0, 0, 0);
     let gridcol = Rgb::new(120, 120, 120);
     let transp = NamedColor::Transparent;
-    let thick: usize = 4;
+    let thick: usize = 3;
     let medium: usize = 3;
     let _thin: usize = 2;
-    let msize: usize = 10;
+    //let msize: usize = 10;
     let fsz_title: usize = 35;
     let fsz_legend: usize = 35;
     let fsz_ticks: usize = 30;
@@ -22,14 +22,16 @@ fn line_and_scatter_plot(x: Vec<f64>, y1: Vec<f64>, y2: Vec<f64>) {
 
     let trace1 = Scatter::new(x.clone(), y1)
         .name("sin(x)  ")
-        .mode(Mode::LinesMarkers)
-        .line(Line::new().color(linecol1).width(medium as f64))
-        .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle));
+        .mode(Mode::Lines)
+        .line(Line::new().color(linecol1).width(medium as f64).dash(DashType::Solid),
+        //.marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle),
+    );
     let trace2 = Scatter::new(x, y2)
         .name("cos(x)  ")
-        .mode(Mode::LinesMarkers)
-        .line(Line::new().color(linecol2).width(medium as f64))
-        .marker(Marker::new().size(msize).symbol(MarkerSymbol::DiamondDot));
+        .mode(Mode::Lines)
+        .line(Line::new().color(linecol2).width(medium as f64).dash(DashType::Dash),
+        //.marker(Marker::new().size(msize).symbol(MarkerSymbol::DiamondDot),
+    );
 
     let title = Title::new("Trigonometric functions")
         .font(Font::new().size(fsz_title).family("Serif").color(forecol));
