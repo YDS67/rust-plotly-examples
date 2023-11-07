@@ -8,6 +8,6 @@ Here's an example plot:
 
 ![image](./example2/line_and_scatter_plot.png)
 
-### Light mode (example 3)
+### Light mode (example 5)
 
-![image](./example3/line_and_scatter_plot.png)
+![image](./example5/Data_plot.png)
