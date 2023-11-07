@@ -114,7 +114,7 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
     plot.set_layout(layout);
 
     //plot.write_html(flnm);
-    //plot.write_image(flnm, ImageFormat::SVG, 1280, 960, 1.0);
+    plot.write_image(flnm, ImageFormat::SVG, 1280, 960, 1.0);
     plot.write_image(flnm, ImageFormat::PNG, 1280, 960, 1.0);
 }
 
