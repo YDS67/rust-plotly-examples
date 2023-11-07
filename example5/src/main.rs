@@ -1,7 +1,7 @@
 extern crate plotly;
 use plotly::color::{NamedColor, Rgb};
 use plotly::common::{Anchor, Font, Line, Marker, MarkerSymbol, Mode, Title};
-use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType, Margin};
+use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType, ItemSizing, Margin};
 use plotly::{ImageFormat, Layout, Plot, Scatter};
 
 fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>, flnm: &str, title: &str) {
@@ -9,26 +9,26 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
     let linecol1 = NamedColor::DarkBlue;
     let linecol2 = NamedColor::DarkRed;
     let forecol = Rgb::new(0, 0, 0);
-    let gridcol = Rgb::new(120, 120, 120);
+    let gridcol = Rgb::new(180, 180, 180);
     let transp = NamedColor::Transparent;
-    let thick: usize = 4;
+    let thick: usize = 3;
     let medium: usize = 3;
     let _thin: usize = 2;
     let msize: usize = 10;
     let fsz_title: usize = 35;
-    let fsz_legend: usize = 25;
-    let fsz_ticks: usize = 25;
-    let fsz_axes: usize = 30;
+    let fsz_legend: usize = 35;
+    let fsz_ticks: usize = 30;
+    let fsz_axes: usize = 35;
 
     let trace1 = Scatter::new(x1, y1)
-        .name("Diff.  ")
+        .name("Diffusion")
         .mode(Mode::Lines)
         .line(Line::new().color(linecol1).width(medium as f64)
         //.marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle),
     );
         
     let trace2 = Scatter::new(x2, y2)
-        .name("R.W.  ")
+        .name("Random walk")
         .mode(Mode::Markers)
         //.line(Line::new().color(linecol2).width(medium as f64))
         .marker(Marker::new().size(msize).color(linecol2).symbol(MarkerSymbol::Circle)
@@ -46,14 +46,15 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
         .border_width(medium)
         .border_color(forecol)
         .background_color(bgcol)
-        .item_width(52);
+        .item_width(52)
+        .item_sizing(ItemSizing::Trace);
 
     let axis = Axis::new()
         .position(0.0)
         .show_line(true)
         .line_color(forecol)
         .line_width(thick)
-        .tick_length(6)
+        .tick_length(9)
         .tick_width(medium)
         .tick_color(forecol)
         .tick_font(Font::new().color(forecol))
@@ -102,7 +103,7 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
         .y_axis(axisy)
         .plot_background_color(transp)
         .paper_background_color(bgcol)
-        .margin(Margin::new().left(105).bottom(75));
+        .margin(Margin::new().left(105).bottom(105));
 
     layout.add_shape(line_top);
     layout.add_shape(line_right);
@@ -113,8 +114,8 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
     plot.set_layout(layout);
 
     //plot.write_html(flnm);
-    plot.write_image(flnm, ImageFormat::SVG, 1024, 768, 1.0);
-    plot.write_image(flnm, ImageFormat::PNG, 1024, 768, 1.0);
+    //plot.write_image(flnm, ImageFormat::SVG, 1280, 960, 1.0);
+    plot.write_image(flnm, ImageFormat::PNG, 1280, 960, 1.0);
 }
 
 fn read_from_file(file_path: &str) -> Vec<Vec<f64>> {
@@ -138,7 +139,7 @@ fn read_from_file(file_path: &str) -> Vec<Vec<f64>> {
 
     for line in file_contents {
         let row: Vec<f64> = line
-        .split(|c| c == ' ' || c == '\t')
+        .split(|c| c == ' ' || c == '\t'|| c == ',')
         .map(|s| s.trim()) 
         .filter(|s| !s.is_empty()) 
         .map(|s| s.parse().unwrap()) 
