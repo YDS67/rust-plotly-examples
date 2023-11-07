@@ -68,7 +68,8 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
     let axisy = axis
         .clone()
         .title(Title::new("Number of particles")
-            .font(Font::new().size(fsz_axes).color(forecol).family("Serif")));
+            .font(Font::new().size(fsz_axes).color(forecol).family("Serif")))
+        .tick_angle(270.0);
 
     let line_top = Shape::new()
         .shape_type(ShapeType::Line)
@@ -101,7 +102,7 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
         .y_axis(axisy)
         .plot_background_color(transp)
         .paper_background_color(bgcol)
-        .margin(Margin::new().left(125).bottom(75));
+        .margin(Margin::new().left(105).bottom(75));
 
     layout.add_shape(line_top);
     layout.add_shape(line_right);
