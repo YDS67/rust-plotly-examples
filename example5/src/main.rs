@@ -15,7 +15,7 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
     let medium: usize = 3;
     let _thin: usize = 2;
     let msize: usize = 10;
-    let fsz_title: usize = 35;
+    let fsz_title: usize = 40;
     let fsz_legend: usize = 35;
     let fsz_ticks: usize = 30;
     let fsz_axes: usize = 35;
@@ -114,8 +114,8 @@ fn line_and_scatter_plot(x1: Vec<f64>, y1: Vec<f64>, x2: Vec<f64>, y2: Vec<f64>,
     plot.set_layout(layout);
 
     //plot.write_html(flnm);
-    plot.write_image(flnm, ImageFormat::SVG, 1280, 960, 1.0);
-    plot.write_image(flnm, ImageFormat::PNG, 1280, 960, 1.0);
+    plot.write_image(flnm, ImageFormat::PDF, 1280, 960, 1.0);
+    //plot.write_image(flnm, ImageFormat::PNG, 1280, 960, 1.0);
 }
 
 fn read_from_file(file_path: &str) -> Vec<Vec<f64>> {
@@ -176,5 +176,5 @@ fn main() {
     let x2 = data[3].clone();
     let y2 = data[4].clone();
 
-    line_and_scatter_plot(x1, y1, x2, y2, "Data_plot", "Diffusion / random walk");
+    line_and_scatter_plot(x1, y1, x2, y2, "Data_plot", "Initial state δ(x)");
 }
