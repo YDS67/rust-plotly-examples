@@ -30,8 +30,9 @@ fn main() {
     // change legend alignments or plotting mode
     use plot::{LegendAl, LineOrPoints};
     plot_par.legend_al = LegendAl::BottomLeft;
-    plot_par.line_or_points = vec![LineOrPoints::Line, LineOrPoints::Line, LineOrPoints::Points, LineOrPoints::LineAndPoints];
+    plot_par.line_or_points = vec![LineOrPoints::Line, LineOrPoints::Points, LineOrPoints::Points, LineOrPoints::LineAndPoints];
     //plot
     plot::line_plot(&vec![x.clone(); 4], &vec![y1.clone(), y2.clone(), y3.clone(), y4.clone()], &plot_par);
     file::save_columns_to_file(&vec![x, y1, y2, y3, y4], "results", "taylor.dat");
+    
 }

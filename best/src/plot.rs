@@ -86,7 +86,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
                     Scatter::new(x[l].clone(), y[l].clone())
                         .name(&plot_par.legends[l])
                         .mode(Mode::Markers)
-                        .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle)),
+                        .marker(Marker::new().size(msize).color(linecol[l]).symbol(MarkerSymbol::Circle)),
                 )
             },
             LineOrPoints::LineAndPoints => {
