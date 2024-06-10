@@ -11,6 +11,13 @@ pub enum LegendAl{
     TopLeft,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum LineOrPoints{
+    Line,
+    Points,
+    LineAndPoints,
+}
+
 pub struct PlotPar{
     pub xlab: String,
     pub ylab: String,
@@ -18,17 +25,19 @@ pub struct PlotPar{
     pub flnm: String,
     pub legends: Vec<String>,
     pub legend_al: LegendAl,
+    pub line_or_points: Vec<LineOrPoints>,
 }
 
 impl PlotPar{
-    pub fn new(xlab: &str, ylab: &str, title: &str, flnm: &str, legends: Vec<String>, legend_al: LegendAl) -> PlotPar {
+    pub fn new(xlab: &str, ylab: &str, title: &str, flnm: &str, legends: Vec<String>) -> PlotPar {
         PlotPar {
             xlab: format!("{}", xlab),
             ylab: format!("{}", ylab),
             title: format!("{}", title),
             flnm: format!("{}", flnm),
             legends,
-            legend_al,
+            legend_al: LegendAl::TopRight,
+            line_or_points: vec![LineOrPoints::Line; 20],
         }
     }
 }
@@ -40,12 +49,12 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         NamedColor::MidnightBlue, 
         NamedColor::Maroon,
         NamedColor::Teal,
-        NamedColor::YellowGreen,
+        NamedColor::RebeccaPurple,
         NamedColor::Brown,
+        NamedColor::YellowGreen,
         NamedColor::DarkGreen,
         NamedColor::Indigo,
         NamedColor::OliveDrab,
-        NamedColor::RebeccaPurple,
     ];
     let linecol: Vec<NamedColor> = (0..lines_number).map(|l| cols[l]).collect();
     let forecol = Rgb::new(0, 0, 0);
@@ -63,13 +72,33 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     let mut traces = Vec::new();
 
     for l in 0..lines_number {
-        traces.push(
-            Scatter::new(x[l].clone(), y[l].clone())
-                .name(&plot_par.legends[l])
-                .mode(Mode::Lines)
-                .line(Line::new().color(linecol[l]).width(medium as f64)
-                //.marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle),
-        ));
+        match plot_par.line_or_points[l] {
+            LineOrPoints::Line => {
+                traces.push(
+                    Scatter::new(x[l].clone(), y[l].clone())
+                        .name(&plot_par.legends[l])
+                        .mode(Mode::Lines)
+                        .line(Line::new().color(linecol[l]).width(medium as f64)),
+                )
+            },
+            LineOrPoints::Points => {
+                traces.push(
+                    Scatter::new(x[l].clone(), y[l].clone())
+                        .name(&plot_par.legends[l])
+                        .mode(Mode::Markers)
+                        .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle)),
+                )
+            },
+            LineOrPoints::LineAndPoints => {
+                traces.push(
+                    Scatter::new(x[l].clone(), y[l].clone())
+                        .name(&plot_par.legends[l])
+                        .mode(Mode::LinesMarkers)
+                        .line(Line::new().color(linecol[l]).width(medium as f64))
+                        .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle)),
+                )
+            },
+        }
     }
 
     let title = Title::new(&plot_par.title)
@@ -178,7 +207,6 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     }
     plot.set_layout(layout);
 
-    //plot.write_html(flnm);
     plot.write_image(&plot_par.flnm, ImageFormat::PDF, 1280, 960, 1.0);
-    //plot.write_image(flnm, ImageFormat::PNG, 1280, 960, 1.0);
+    plot.write_image(&plot_par.flnm, ImageFormat::PNG, 1280, 960, 1.0);
 }
