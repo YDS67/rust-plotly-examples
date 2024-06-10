@@ -12,7 +12,7 @@ fn main() {
     let y3: Vec<f64> = x.clone().into_iter().map(|x| 1.0-x.powi(2)/2.0+x.powi(4)/24.0).collect();
     let y4: Vec<f64> = x.clone().into_iter().map(|x| 1.0-x.powi(2)/2.0+x.powi(4)/24.0-x.powi(6)/720.0).collect();
 
-    let flnm = format!("Taylor_cos.r");
+    let flnm = format!("Taylor_cos");
     let title = format!("Taylor series approximations");
     //set parameters
     let mut plot_par = plot::PlotPar::new(
@@ -34,5 +34,5 @@ fn main() {
     //plot
     plot::line_plot(&vec![x.clone(); 4], &vec![y1.clone(), y2.clone(), y3.clone(), y4.clone()], &plot_par);
     file::save_columns_to_file(&vec![x, y1, y2, y3, y4], "results", "taylor.dat");
-    
+
 }
