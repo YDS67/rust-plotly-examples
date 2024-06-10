@@ -3,22 +3,32 @@ use plotly::common::{Anchor, Font, Line, Marker, MarkerSymbol, Mode, Title};
 use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType, ItemSizing, Margin};
 use plotly::{ImageFormat, Layout, Plot, Scatter};
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum LegendAl{
+    BottomRight,
+    TopRight,
+    BottomLeft,
+    TopLeft,
+}
+
 pub struct PlotPar{
     pub xlab: String,
     pub ylab: String,
     pub title: String,
     pub flnm: String,
-    pub legends: Vec<String>
+    pub legends: Vec<String>,
+    pub legend_al: LegendAl,
 }
 
 impl PlotPar{
-    pub fn new(xlab: &str, ylab: &str, title: &str, flnm: &str, legends: Vec<String>) -> PlotPar {
+    pub fn new(xlab: &str, ylab: &str, title: &str, flnm: &str, legends: Vec<String>, legend_al: LegendAl) -> PlotPar {
         PlotPar {
             xlab: format!("{}", xlab),
             ylab: format!("{}", ylab),
             title: format!("{}", title),
             flnm: format!("{}", flnm),
             legends,
+            legend_al,
         }
     }
 }
@@ -65,12 +75,36 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     let title = Title::new(&plot_par.title)
         .font(Font::new().size(fsz_title).family("Serif").color(forecol));
 
-    let legend = Legend::new()
+    let legend_bottom_right = Legend::new()
+        .x(0.99)
+        .x_anchor(Anchor::Right)
+        .y(0.01)
+        .y_anchor(Anchor::Bottom);
+
+    let legend_top_right = Legend::new()
+        .x(0.99)
+        .x_anchor(Anchor::Right)
+        .y(0.99)
+        .y_anchor(Anchor::Top);
+
+    let legend_bottom_left = Legend::new()
         .x(0.01)
         .x_anchor(Anchor::Left)
         .y(0.01)
-        .y_anchor(Anchor::Bottom)
-        .font(Font::new().size(fsz_legend).color(forecol).family("Serif"))
+        .y_anchor(Anchor::Bottom);
+
+    let legend_top_left = Legend::new()
+        .x(0.01)
+        .x_anchor(Anchor::Left)
+        .y(0.99)
+        .y_anchor(Anchor::Top);
+
+    let legend = match plot_par.legend_al {
+        LegendAl::BottomLeft => legend_bottom_left,
+        LegendAl::BottomRight => legend_bottom_right,
+        LegendAl::TopLeft => legend_top_left,
+        LegendAl::TopRight => legend_top_right,
+    }.font(Font::new().size(fsz_legend).color(forecol).family("Serif"))
         .border_width(medium)
         .border_color(forecol)
         .background_color(bgcol)
