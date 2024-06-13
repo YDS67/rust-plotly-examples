@@ -1,5 +1,5 @@
 use plotly::color::{NamedColor, Rgb};
-use plotly::common::{Anchor, Font, Line, Marker, MarkerSymbol, Mode, Title};
+use plotly::common::{Anchor, DashType, Font, Line, Marker, MarkerSymbol, Mode, Title};
 use plotly::layout::{Axis, Legend, Shape, ShapeLine, ShapeType, ItemSizing, Margin};
 use plotly::{ImageFormat, Layout, Plot, Scatter};
 
@@ -9,6 +9,10 @@ pub enum LegendAl{
     TopRight,
     BottomLeft,
     TopLeft,
+    CenterRight,
+    CenterLeft,
+    BottomCenter,
+    TopCenter,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -26,6 +30,8 @@ pub struct PlotPar{
     pub legends: Vec<String>,
     pub legend_al: LegendAl,
     pub line_or_points: Vec<LineOrPoints>,
+    pub colors: Vec<NamedColor>,
+    pub dashes: Vec<DashType>,
 }
 
 impl PlotPar{
@@ -37,7 +43,9 @@ impl PlotPar{
             flnm: format!("{}", flnm),
             legends,
             legend_al: LegendAl::TopRight,
-            line_or_points: vec![LineOrPoints::Line; 20],
+            line_or_points: vec![LineOrPoints::Line; 100],
+            colors: COLORS.to_vec(),
+            dashes: vec![DashType::Solid; 100]
         }
     }
 }
@@ -45,18 +53,6 @@ impl PlotPar{
 pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     let lines_number = x.len();
     let bgcol = Rgb::new(255, 255, 255);
-    let cols = vec![
-        NamedColor::MidnightBlue, 
-        NamedColor::Maroon,
-        NamedColor::Teal,
-        NamedColor::RebeccaPurple,
-        NamedColor::Brown,
-        NamedColor::YellowGreen,
-        NamedColor::DarkGreen,
-        NamedColor::Indigo,
-        NamedColor::OliveDrab,
-    ];
-    let linecol: Vec<NamedColor> = (0..lines_number).map(|l| cols[l]).collect();
     let forecol = Rgb::new(0, 0, 0);
     let gridcol = Rgb::new(220, 220, 220);
     let transp = NamedColor::Transparent;
@@ -64,10 +60,11 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     let medium: usize = 4;
     let _thin: usize = 2;
     let msize: usize = 10;
-    let fsz_title: usize = 35;
+    let fsz_title: usize = 40;
     let fsz_legend: usize = 35;
     let fsz_ticks: usize = 30;
     let fsz_axes: usize = 35;
+    let dashes: Vec<DashType> = plot_par.dashes.clone();
 
     let mut traces = Vec::new();
 
@@ -78,7 +75,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
                     Scatter::new(x[l].clone(), y[l].clone())
                         .name(&plot_par.legends[l])
                         .mode(Mode::Lines)
-                        .line(Line::new().color(linecol[l]).width(medium as f64)),
+                        .line(Line::new().color(plot_par.colors[l]).width(medium as f64).dash(dashes[l].clone())),
                 )
             },
             LineOrPoints::Points => {
@@ -86,7 +83,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
                     Scatter::new(x[l].clone(), y[l].clone())
                         .name(&plot_par.legends[l])
                         .mode(Mode::Markers)
-                        .marker(Marker::new().size(msize).color(linecol[l]).symbol(MarkerSymbol::Circle)),
+                        .marker(Marker::new().size(msize).color(plot_par.colors[l]).symbol(MarkerSymbol::Circle)),
                 )
             },
             LineOrPoints::LineAndPoints => {
@@ -94,7 +91,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
                     Scatter::new(x[l].clone(), y[l].clone())
                         .name(&plot_par.legends[l])
                         .mode(Mode::LinesMarkers)
-                        .line(Line::new().color(linecol[l]).width(medium as f64))
+                        .line(Line::new().color(plot_par.colors[l]).width(medium as f64).dash(dashes[l].clone()))
                         .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle)),
                 )
             },
@@ -128,11 +125,39 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         .y(0.99)
         .y_anchor(Anchor::Top);
 
+    let legend_top_center = Legend::new()
+        .x(0.5)
+        .x_anchor(Anchor::Center)
+        .y(0.99)
+        .y_anchor(Anchor::Top);
+
+    let legend_bottom_center = Legend::new()
+        .x(0.5)
+        .x_anchor(Anchor::Center)
+        .y(0.01)
+        .y_anchor(Anchor::Bottom);
+
+    let legend_center_right = Legend::new()
+        .x(1.01)
+        .x_anchor(Anchor::Left)
+        .y(0.5)
+        .y_anchor(Anchor::Center);
+
+    let legend_center_left = Legend::new()
+        .x(0.01)
+        .x_anchor(Anchor::Left)
+        .y(0.5)
+        .y_anchor(Anchor::Center);
+
     let legend = match plot_par.legend_al {
         LegendAl::BottomLeft => legend_bottom_left,
         LegendAl::BottomRight => legend_bottom_right,
         LegendAl::TopLeft => legend_top_left,
         LegendAl::TopRight => legend_top_right,
+        LegendAl::BottomCenter => legend_bottom_center,
+        LegendAl::CenterLeft => legend_center_left,
+        LegendAl::CenterRight => legend_center_right,
+        LegendAl::TopCenter => legend_top_center,
     }.font(Font::new().size(fsz_legend).color(forecol).family("Serif"))
         .border_width(medium)
         .border_color(forecol)
@@ -207,6 +232,92 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     }
     plot.set_layout(layout);
 
+    //let config = plotly::Configuration::new().typeset_math(true);
+    //plot.set_configuration(config);
+
     plot.write_image(&plot_par.flnm, ImageFormat::PDF, 1280, 960, 1.0);
-    plot.write_image(&plot_par.flnm, ImageFormat::PNG, 1280, 960, 1.0);
+    plot.write_html(&format!("{}.html",plot_par.flnm));
+    //plot.write_image(&plot_par.flnm, ImageFormat::PNG, 1280, 960, 1.0);
 }
+
+const COLORS: [NamedColor; 40] = [
+    NamedColor::Black,
+    NamedColor::MidnightBlue, 
+    NamedColor::Maroon,
+    NamedColor::Teal,
+    NamedColor::RebeccaPurple,
+    NamedColor::Brown,
+    NamedColor::YellowGreen,
+    NamedColor::DarkGreen,
+    NamedColor::Indigo,
+    NamedColor::OliveDrab,
+    NamedColor::Black,
+    NamedColor::MidnightBlue, 
+    NamedColor::Maroon,
+    NamedColor::Teal,
+    NamedColor::RebeccaPurple,
+    NamedColor::Brown,
+    NamedColor::YellowGreen,
+    NamedColor::DarkGreen,
+    NamedColor::Indigo,
+    NamedColor::OliveDrab,
+    NamedColor::Black,
+    NamedColor::MidnightBlue, 
+    NamedColor::Maroon,
+    NamedColor::Teal,
+    NamedColor::RebeccaPurple,
+    NamedColor::Brown,
+    NamedColor::YellowGreen,
+    NamedColor::DarkGreen,
+    NamedColor::Indigo,
+    NamedColor::OliveDrab,
+    NamedColor::Black,
+    NamedColor::MidnightBlue, 
+    NamedColor::Maroon,
+    NamedColor::Teal,
+    NamedColor::RebeccaPurple,
+    NamedColor::Brown,
+    NamedColor::YellowGreen,
+    NamedColor::DarkGreen,
+    NamedColor::Indigo,
+    NamedColor::OliveDrab,
+];
+
+const DASHTYPES: [DashType; 36] = [
+    DashType::Solid,
+    DashType::Dash,
+    DashType::Dot,
+    DashType::DashDot,
+    DashType::LongDash,
+    DashType::LongDashDot,
+    DashType::Solid,
+    DashType::Dash,
+    DashType::Dot,
+    DashType::DashDot,
+    DashType::LongDash,
+    DashType::LongDashDot,
+    DashType::Solid,
+    DashType::Dash,
+    DashType::Dot,
+    DashType::DashDot,
+    DashType::LongDash,
+    DashType::LongDashDot,
+    DashType::Solid,
+    DashType::Dash,
+    DashType::Dot,
+    DashType::DashDot,
+    DashType::LongDash,
+    DashType::LongDashDot,
+    DashType::Solid,
+    DashType::Dash,
+    DashType::Dot,
+    DashType::DashDot,
+    DashType::LongDash,
+    DashType::LongDashDot,
+    DashType::Solid,
+    DashType::Dash,
+    DashType::Dot,
+    DashType::DashDot,
+    DashType::LongDash,
+    DashType::LongDashDot,
+];
