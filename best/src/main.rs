@@ -16,6 +16,7 @@ fn main() {
     let title = format!(r"Приближения рядом Тейлора для cos(x<sup>2</sup>)");
     //set parameters
     let mut plot_par = plot::PlotPar::new(
+        1600, 1080,
         "x, условные единицы", 
         "f(x)", 
         &title, 
@@ -30,9 +31,9 @@ fn main() {
     // change legend alignments or plotting mode
     use plot::{LegendAl, LineOrPoints};
     plot_par.legend_al = LegendAl::BottomLeft;
-    plot_par.line_or_points = vec![LineOrPoints::Line, LineOrPoints::LineAndPoints, LineOrPoints::Points, LineOrPoints::Points];
+    plot_par.line_or_points[3] = LineOrPoints::Points;
     plot_par.font_family = format!("Times New Roman");
-    plot_par.dashes[1] = plot::DASHTYPES[1].clone();
+    plot_par.dashes = plot::DASHTYPES.to_vec();
     //plot
     plot::line_plot(&vec![x.clone(); 4], &vec![y1.clone(), y2.clone(), y3.clone(), y4.clone()], &plot_par);
     file::save_columns_to_file(&vec![x, y1, y2, y3, y4], "results", "taylor.dat");

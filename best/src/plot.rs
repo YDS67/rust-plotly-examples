@@ -23,10 +23,13 @@ pub enum LineOrPoints{
 }
 
 pub struct PlotPar{
+    pub width: usize,
+    pub height: usize,
     pub xlab: String,
     pub ylab: String,
     pub title: String,
     pub flnm: String,
+    pub show_legend: bool,
     pub legends: Vec<String>,
     pub legend_al: LegendAl,
     pub line_or_points: Vec<LineOrPoints>,
@@ -37,12 +40,15 @@ pub struct PlotPar{
 }
 
 impl PlotPar{
-    pub fn new(xlab: &str, ylab: &str, title: &str, flnm: &str, legends: Vec<String>) -> PlotPar {
+    pub fn new(width: usize, height: usize, xlab: &str, ylab: &str, title: &str, flnm: &str, legends: Vec<String>) -> PlotPar {
         PlotPar {
+            width,
+            height,
             xlab: format!("{}", xlab),
             ylab: format!("{}", ylab),
             title: format!("{}", title),
             flnm: format!("{}", flnm),
+            show_legend: true,
             legends,
             legend_al: LegendAl::TopRight,
             line_or_points: vec![LineOrPoints::Line; 100],
@@ -65,9 +71,9 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     let _thin: usize = 2;
     let msize: usize = 10;
     let fsz_title: usize = (19.0*plot_par.font_scale) as usize;
-    let fsz_legend: usize = (17.0*plot_par.font_scale) as usize;
+    let fsz_legend: usize = (18.0*plot_par.font_scale) as usize;
     let fsz_ticks: usize = (16.0*plot_par.font_scale) as usize;
-    let fsz_axes: usize = (17.0*plot_par.font_scale) as usize;
+    let fsz_axes: usize = (19.0*plot_par.font_scale) as usize;
     let dashes: Vec<DashType> = plot_par.dashes.clone();
 
     let mut traces = Vec::new();
@@ -227,7 +233,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         .font(Font::new().size(fsz_ticks))
         .title(title)
         .legend(legend)
-        .show_legend(true)
+        .show_legend(plot_par.show_legend)
         .x_axis(axisx)
         .y_axis(axisy)
         .plot_background_color(transp)
@@ -248,9 +254,8 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     // let config = plotly::Configuration::new().typeset_math(true);
     // plot.set_configuration(config);
 
-    plot.write_image(&plot_par.flnm, ImageFormat::PDF, 1280, 960, 1.0);
-    //plot.write_html(&format!("{}.html",plot_par.flnm));
-    //plot.write_image(&plot_par.flnm, ImageFormat::PNG, 1280, 960, 1.0);
+    plot.write_image(&plot_par.flnm, ImageFormat::PDF, plot_par.width, plot_par.height, 1.0);
+    plot.write_image(&plot_par.flnm, ImageFormat::PNG, plot_par.width, plot_par.height, 1.0);
 }
 
 pub const COLORS: [[u8; 3]; 45] = [
