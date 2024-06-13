@@ -30,8 +30,10 @@ pub struct PlotPar{
     pub legends: Vec<String>,
     pub legend_al: LegendAl,
     pub line_or_points: Vec<LineOrPoints>,
-    pub colors: Vec<NamedColor>,
+    pub colors: Vec<[u8; 3]>,
     pub dashes: Vec<DashType>,
+    pub font_scale: f64,
+    pub font_family: String,
 }
 
 impl PlotPar{
@@ -45,7 +47,9 @@ impl PlotPar{
             legend_al: LegendAl::TopRight,
             line_or_points: vec![LineOrPoints::Line; 100],
             colors: COLORS.to_vec(),
-            dashes: vec![DashType::Solid; 100]
+            dashes: vec![DashType::Solid; 100],
+            font_scale: 2.0,
+            font_family: format!("Serif"),
         }
     }
 }
@@ -60,10 +64,10 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     let medium: usize = 4;
     let _thin: usize = 2;
     let msize: usize = 10;
-    let fsz_title: usize = 40;
-    let fsz_legend: usize = 35;
-    let fsz_ticks: usize = 30;
-    let fsz_axes: usize = 35;
+    let fsz_title: usize = (19.0*plot_par.font_scale) as usize;
+    let fsz_legend: usize = (17.0*plot_par.font_scale) as usize;
+    let fsz_ticks: usize = (16.0*plot_par.font_scale) as usize;
+    let fsz_axes: usize = (17.0*plot_par.font_scale) as usize;
     let dashes: Vec<DashType> = plot_par.dashes.clone();
 
     let mut traces = Vec::new();
@@ -75,7 +79,10 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
                     Scatter::new(x[l].clone(), y[l].clone())
                         .name(&plot_par.legends[l])
                         .mode(Mode::Lines)
-                        .line(Line::new().color(plot_par.colors[l]).width(medium as f64).dash(dashes[l].clone())),
+                        .line(Line::new()
+                            .color(Rgb::new(plot_par.colors[l][0], plot_par.colors[l][1], plot_par.colors[l][2]))
+                            .width(medium as f64).dash(dashes[l].clone())
+                        ),
                 )
             },
             LineOrPoints::Points => {
@@ -83,7 +90,10 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
                     Scatter::new(x[l].clone(), y[l].clone())
                         .name(&plot_par.legends[l])
                         .mode(Mode::Markers)
-                        .marker(Marker::new().size(msize).color(plot_par.colors[l]).symbol(MarkerSymbol::Circle)),
+                        .marker(Marker::new().size(msize)
+                        .color(Rgb::new(plot_par.colors[l][0], plot_par.colors[l][1], plot_par.colors[l][2]))
+                        .symbol(MarkerSymbol::Circle)
+                    ),
                 )
             },
             LineOrPoints::LineAndPoints => {
@@ -91,7 +101,10 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
                     Scatter::new(x[l].clone(), y[l].clone())
                         .name(&plot_par.legends[l])
                         .mode(Mode::LinesMarkers)
-                        .line(Line::new().color(plot_par.colors[l]).width(medium as f64).dash(dashes[l].clone()))
+                        .line(Line::new()
+                            .color(Rgb::new(plot_par.colors[l][0], plot_par.colors[l][1], plot_par.colors[l][2]))
+                            .width(medium as f64).dash(dashes[l].clone())
+                        )
                         .marker(Marker::new().size(msize).symbol(MarkerSymbol::Circle)),
                 )
             },
@@ -99,7 +112,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     }
 
     let title = Title::new(&plot_par.title)
-        .font(Font::new().size(fsz_title).family("Serif").color(forecol));
+        .font(Font::new().size(fsz_title).family(&plot_par.font_family).color(forecol));
 
     let legend_bottom_right = Legend::new()
         .x(0.99)
@@ -158,7 +171,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         LegendAl::CenterLeft => legend_center_left,
         LegendAl::CenterRight => legend_center_right,
         LegendAl::TopCenter => legend_top_center,
-    }.font(Font::new().size(fsz_legend).color(forecol).family("Serif"))
+    }.font(Font::new().size(fsz_legend).color(forecol).family(&plot_par.font_family))
         .border_width(medium)
         .border_color(forecol)
         .background_color(bgcol)
@@ -180,12 +193,12 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
 
     let axisx = axis.clone().title(
         Title::new(&plot_par.xlab)
-            .font(Font::new().size(fsz_axes).color(forecol).family("Serif")));
+            .font(Font::new().size(fsz_axes).color(forecol).family(&plot_par.font_family)));
 
     let axisy = axis
         .clone()
         .title(Title::new(&plot_par.ylab)
-            .font(Font::new().size(fsz_axes).color(forecol).family("Serif")))
+            .font(Font::new().size(fsz_axes).color(forecol).family(&plot_par.font_family)))
         .tick_angle(270.0);
 
     let line_top = Shape::new()
@@ -232,58 +245,63 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     }
     plot.set_layout(layout);
 
-    //let config = plotly::Configuration::new().typeset_math(true);
-    //plot.set_configuration(config);
+    // let config = plotly::Configuration::new().typeset_math(true);
+    // plot.set_configuration(config);
 
     plot.write_image(&plot_par.flnm, ImageFormat::PDF, 1280, 960, 1.0);
-    plot.write_html(&format!("{}.html",plot_par.flnm));
+    //plot.write_html(&format!("{}.html",plot_par.flnm));
     //plot.write_image(&plot_par.flnm, ImageFormat::PNG, 1280, 960, 1.0);
 }
 
-const COLORS: [NamedColor; 40] = [
-    NamedColor::Black,
-    NamedColor::MidnightBlue, 
-    NamedColor::Maroon,
-    NamedColor::Teal,
-    NamedColor::RebeccaPurple,
-    NamedColor::Brown,
-    NamedColor::YellowGreen,
-    NamedColor::DarkGreen,
-    NamedColor::Indigo,
-    NamedColor::OliveDrab,
-    NamedColor::Black,
-    NamedColor::MidnightBlue, 
-    NamedColor::Maroon,
-    NamedColor::Teal,
-    NamedColor::RebeccaPurple,
-    NamedColor::Brown,
-    NamedColor::YellowGreen,
-    NamedColor::DarkGreen,
-    NamedColor::Indigo,
-    NamedColor::OliveDrab,
-    NamedColor::Black,
-    NamedColor::MidnightBlue, 
-    NamedColor::Maroon,
-    NamedColor::Teal,
-    NamedColor::RebeccaPurple,
-    NamedColor::Brown,
-    NamedColor::YellowGreen,
-    NamedColor::DarkGreen,
-    NamedColor::Indigo,
-    NamedColor::OliveDrab,
-    NamedColor::Black,
-    NamedColor::MidnightBlue, 
-    NamedColor::Maroon,
-    NamedColor::Teal,
-    NamedColor::RebeccaPurple,
-    NamedColor::Brown,
-    NamedColor::YellowGreen,
-    NamedColor::DarkGreen,
-    NamedColor::Indigo,
-    NamedColor::OliveDrab,
+pub const COLORS: [[u8; 3]; 45] = [
+    [0, 0, 0],
+    [68,119,170],
+    [238,119,51],
+    [34,136,51],
+    [170,51,119],
+    [204,187,68],
+    [0,153,136],
+    [102,204,238],
+    [51,34,136],
+    [221,170,51],
+    [204,51,17],
+    [187,187,187],
+    [0,68,136],
+    [153,153,51],
+    [136,34,85],
+    [0, 0, 0],
+    [68,119,170],
+    [238,119,51],
+    [34,136,51],
+    [170,51,119],
+    [204,187,68],
+    [0,153,136],
+    [102,204,238],
+    [51,34,136],
+    [221,170,51],
+    [204,51,17],
+    [187,187,187],
+    [0,68,136],
+    [153,153,51],
+    [136,34,85],
+    [0, 0, 0],
+    [68,119,170],
+    [238,119,51],
+    [34,136,51],
+    [170,51,119],
+    [204,187,68],
+    [0,153,136],
+    [102,204,238],
+    [51,34,136],
+    [221,170,51],
+    [204,51,17],
+    [187,187,187],
+    [0,68,136],
+    [153,153,51],
+    [136,34,85],
 ];
 
-const DASHTYPES: [DashType; 36] = [
+pub const DASHTYPES: [DashType; 36] = [
     DashType::Solid,
     DashType::Dash,
     DashType::Dot,
