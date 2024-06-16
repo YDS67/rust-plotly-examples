@@ -27,6 +27,12 @@ pub struct PlotPar{
     pub height: usize,
     pub xlab: String,
     pub ylab: String,
+    pub log_x: bool,
+    pub log_y: bool,
+    pub custom_range_x: bool,
+    pub custom_range_y: bool,
+    pub range_x: [f64; 2],
+    pub range_y: [f64; 2],
     pub title: String,
     pub flnm: String,
     pub show_legend: bool,
@@ -46,6 +52,12 @@ impl PlotPar{
             height,
             xlab: format!("{}", xlab),
             ylab: format!("{}", ylab),
+            log_x: false,
+            log_y: false,
+            custom_range_x: false,
+            custom_range_y: false,
+            range_x: [0.0; 2],
+            range_y: [0.0; 2],
             title: format!("{}", title),
             flnm: format!("{}", flnm),
             show_legend: true,
@@ -67,7 +79,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     let gridcol = Rgb::new(220, 220, 220);
     let transp = NamedColor::Transparent;
     let thick: usize = 3;
-    let medium: usize = 4;
+    let medium: usize = 6;
     let _thin: usize = 2;
     let msize: usize = 10;
     let fsz_title: usize = (19.0*plot_par.font_scale) as usize;
@@ -178,7 +190,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         LegendAl::CenterRight => legend_center_right,
         LegendAl::TopCenter => legend_top_center,
     }.font(Font::new().size(fsz_legend).color(forecol).family(&plot_par.font_family))
-        .border_width(medium)
+        .border_width(thick)
         .border_color(forecol)
         .background_color(bgcol)
         .item_width(52)
@@ -195,17 +207,34 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         .tick_font(Font::new().color(forecol))
         .zero_line(false)
         .show_grid(true)
-        .grid_color(gridcol);
+        .grid_color(gridcol).auto_margin(true);
 
-    let axisx = axis.clone().title(
+    let mut axisx = axis.clone().title(
         Title::new(&plot_par.xlab)
             .font(Font::new().size(fsz_axes).color(forecol).family(&plot_par.font_family)));
 
-    let axisy = axis
+    let mut axisy = axis
         .clone()
         .title(Title::new(&plot_par.ylab)
-            .font(Font::new().size(fsz_axes).color(forecol).family(&plot_par.font_family)))
-        .tick_angle(270.0);
+            .font(Font::new().size(fsz_axes).color(forecol).family(&plot_par.font_family)));
+
+    if plot_par.log_x {
+        axisx = axisx.exponent_format(plotly::common::ExponentFormat::SmallE).type_(plotly::layout::AxisType::Log)
+    };
+
+    if plot_par.log_y {
+        axisy = axisy.tick_angle(0.0).exponent_format(plotly::common::ExponentFormat::SmallE).type_(plotly::layout::AxisType::Log)
+    } else {
+        axisy = axisy.tick_angle(270.0)
+    };
+
+    if plot_par.custom_range_x {
+        axisx = axisx.fixed_range(true).range(plot_par.range_x.to_vec())
+    }
+
+    if plot_par.custom_range_y {
+        axisy = axisy.fixed_range(true).range(plot_par.range_y.to_vec())
+    }
 
     let line_top = Shape::new()
         .shape_type(ShapeType::Line)
@@ -228,8 +257,8 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         .line(ShapeLine::new().color(forecol).width(thick as f64));
 
     let mut layout = Layout::new()
-        .width(1024)
-        .height(768)
+        .width(plot_par.width)
+        .height(plot_par.height)
         .font(Font::new().size(fsz_ticks))
         .title(title)
         .legend(legend)
@@ -237,8 +266,8 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         .x_axis(axisx)
         .y_axis(axisy)
         .plot_background_color(transp)
-        .paper_background_color(bgcol)
-        .margin(Margin::new().left(105).bottom(105));
+        .paper_background_color(bgcol);
+        //.margin(Margin::new().left(250).bottom(120));
 
     layout.add_shape(line_top);
     layout.add_shape(line_right);
@@ -251,11 +280,12 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     }
     plot.set_layout(layout);
 
-    // let config = plotly::Configuration::new().typeset_math(true);
-    // plot.set_configuration(config);
+    //let config = plotly::Configuration::new().static_plot(true);
+    //plot.set_configuration(config);
 
     plot.write_image(&plot_par.flnm, ImageFormat::PDF, plot_par.width, plot_par.height, 1.0);
     plot.write_image(&plot_par.flnm, ImageFormat::PNG, plot_par.width, plot_par.height, 1.0);
+    //plot.write_html(&format!("{}.html", plot_par.flnm));
 }
 
 pub const COLORS: [[u8; 3]; 45] = [
