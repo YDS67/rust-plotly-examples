@@ -31,9 +31,8 @@ fn main() {
         ],
     );
     // change legend alignments or plotting mode
-    use plot::{LegendAl, LineOrPoints};
-    plot_par.legend_al = LegendAl::BottomLeft;
-    plot_par.line_or_points[3] = LineOrPoints::Points;
+    plot_par.legend_al = plot::LegendAl::BottomLeft;
+    //plot_par.line_or_points[3] = LineOrPoints::Points;
     plot_par.font_family = format!("Times New Roman");
     plot_par.dashes = plot::DASHTYPES.to_vec();
     plot_par.custom_range_y = true;
