@@ -42,6 +42,7 @@ pub struct PlotPar{
     pub colors: Vec<[u8; 3]>,
     pub dashes: Vec<DashType>,
     pub font_scale: f64,
+    pub line_scale: f64,
     pub font_family: String,
 }
 
@@ -66,7 +67,8 @@ impl PlotPar{
             line_or_points: vec![LineOrPoints::Line; 100],
             colors: COLORS.to_vec(),
             dashes: vec![DashType::Solid; 100],
-            font_scale: 2.0,
+            font_scale: 1.0,
+            line_scale: 1.0,
             font_family: format!("Serif"),
         }
     }
@@ -78,14 +80,13 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
     let forecol = Rgb::new(0, 0, 0);
     let gridcol = Rgb::new(220, 220, 220);
     let transp = NamedColor::Transparent;
-    let thick: usize = 3;
-    let medium: usize = 6;
-    let _thin: usize = 2;
-    let msize: usize = 10;
-    let fsz_title: usize = (19.0*plot_par.font_scale) as usize;
-    let fsz_legend: usize = (18.0*plot_par.font_scale) as usize;
-    let fsz_ticks: usize = (16.0*plot_par.font_scale) as usize;
-    let fsz_axes: usize = (19.0*plot_par.font_scale) as usize;
+    let thick: usize = (3.0 * plot_par.line_scale) as usize;
+    let medium: usize = (5.0 * plot_par.line_scale) as usize;
+    let msize: usize = (10.0 * plot_par.line_scale) as usize;
+    let fsz_title: usize = (38.0*plot_par.font_scale) as usize;
+    let fsz_legend: usize = (36.0*plot_par.font_scale) as usize;
+    let fsz_ticks: usize = (32.0*plot_par.font_scale) as usize;
+    let fsz_axes: usize = (38.0*plot_par.font_scale) as usize;
     let dashes: Vec<DashType> = plot_par.dashes.clone();
 
     let mut traces = Vec::new();
@@ -266,8 +267,12 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         .x_axis(axisx)
         .y_axis(axisy)
         .plot_background_color(transp)
-        .paper_background_color(bgcol);
-        //.margin(Margin::new().left(250).bottom(120));
+        .paper_background_color(bgcol)
+        .margin(Margin::new()
+            .left((100.0 * plot_par.font_scale) as usize)
+            .bottom((75.0 * plot_par.font_scale) as usize)
+            .top((75.0 * plot_par.font_scale) as usize)
+        );
 
     layout.add_shape(line_top);
     layout.add_shape(line_right);

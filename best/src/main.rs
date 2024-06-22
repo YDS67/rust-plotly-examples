@@ -37,6 +37,8 @@ fn main() {
     plot_par.dashes = plot::DASHTYPES.to_vec();
     plot_par.custom_range_y = true;
     plot_par.range_y = [-1.0,1.0];
+    plot_par.font_scale = 1.5;
+    plot_par.line_scale = 1.5;
     //plot
     plot::line_plot(&vec![x.clone(); 5], &vec![y1.clone(), y2.clone(), y3.clone(), y4.clone(), y5.clone()], &plot_par);
     file::save_columns_to_file(&vec![x, y1, y2, y3, y4, y5], "results", "taylor.dat");
