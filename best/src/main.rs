@@ -23,11 +23,11 @@ fn main() {
         &title, 
         &flnm,
         vec![
-            format!("f(x)"), 
-            format!("T<sub>1</sup>(x)"),
-            format!("T<sub>2</sup>(x)"),
-            format!("T<sub>3</sup>(x)"),
-            format!("T<sub>4</sup>(x)"),
+            format!(" f(x)"), 
+            format!(" T<sub>1</sup>(x) "),
+            format!(" T<sub>2</sup>(x) "),
+            format!(" T<sub>3</sup>(x) "),
+            format!(" T<sub>4</sup>(x) "),
         ],
     );
     // change legend alignments or plotting mode

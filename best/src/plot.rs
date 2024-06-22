@@ -44,6 +44,7 @@ pub struct PlotPar{
     pub font_scale: f64,
     pub line_scale: f64,
     pub font_family: String,
+    pub show_grid: bool,
 }
 
 impl PlotPar{
@@ -70,6 +71,7 @@ impl PlotPar{
             font_scale: 1.0,
             line_scale: 1.0,
             font_family: format!("Serif"),
+            show_grid: true,
         }
     }
 }
@@ -194,7 +196,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         .border_width(thick)
         .border_color(forecol)
         .background_color(bgcol)
-        .item_width(52)
+        .item_width(100)
         .item_sizing(ItemSizing::Trace);
 
     let axis = Axis::new()
@@ -207,7 +209,7 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
         .tick_color(forecol)
         .tick_font(Font::new().color(forecol))
         .zero_line(false)
-        .show_grid(true)
+        .show_grid(true).grid_width(thick)
         .grid_color(gridcol).auto_margin(true);
 
     let mut axisx = axis.clone().title(
@@ -276,6 +278,8 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
 
     layout.add_shape(line_top);
     layout.add_shape(line_right);
+    // Here's how to fix legend
+    //layout.add_shape(Shape::new().shape_type(ShapeType::Rect));
 
     let mut plot = Plot::new();
 
