@@ -294,13 +294,13 @@ pub fn line_plot(x: &Vec<Vec<f64>>, y: &Vec<Vec<f64>>, plot_par: &PlotPar) {
 }
 
 pub const COLORS: [[u8; 3]; 48] = [
-    [0, 0, 0], // black
     [68,119,170], // good blue
-    [204,51,17], // red
-    [170,51,119], // purple, cherry
-    [0,153,136], // teal
     [238,119,51], // orange
     [34,136,51], // green
+    [80, 80, 80], // dark gray
+    [170,51,119], // purple, cherry
+    [0,153,136], // teal
+    [204,51,17], // red
     [102,37,6], // brown
     [221,170,51], // good yellow
     [102,204,238], // sky blue
